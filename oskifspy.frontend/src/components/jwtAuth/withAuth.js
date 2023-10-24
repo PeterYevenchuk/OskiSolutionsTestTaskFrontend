@@ -27,7 +27,7 @@ function useAuth() {
         if (!decoded) {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
-            navigate('/login');
+            navigate('/');
             return null;
         }
         
@@ -76,24 +76,25 @@ function useAuth() {
         }
     }, [accessToken, refreshToken, navigate]);    
 
+    const refreshAccessToken = async (refreshToken, userId, accessToken) => {
+        try {
+            const response = await axios.post('http://localhost:5041/api/Auth/refresh-token', {
+                refreshToken,
+                accessToken,
+                userId,
+            });
+
+            const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data;
+
+            localStorage.setItem('accessToken', newAccessToken);
+            localStorage.setItem('refreshToken', newRefreshToken);
+            setAccessToken(newAccessToken); // Оновити стан accessToken
+        } catch (error) {
+            console.error('Error refreshing access token:', error);
+        }
+    };
+
     return accessToken;
 }
-
-const refreshAccessToken = async (refreshToken, userId, accessToken) => {
-    try {
-        const response = await axios.post('/api/Auth/refresh-token', {
-            refreshToken,
-            accessToken,
-            userId,
-        });
-
-        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data;
-
-        localStorage.setItem('accessToken', newAccessToken);
-        localStorage.setItem('refreshToken', newRefreshToken);
-    } catch (error) {
-        console.error('Error refreshing access token:', error);
-    }
-};
 
 export default useAuth;
