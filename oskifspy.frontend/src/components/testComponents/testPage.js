@@ -43,18 +43,21 @@ const TestPage = () => {
     );
 
     if (allQuestionsAnswered) {
-      axios
-        .post('http://localhost:5041/api/Test/passing-test', {
-          userId,
-          testId,
-          questionAndAnswer: selectedAnswers,
-        })
-        .then(() => {
-          navigate('/home');
-        })
-        .catch((error) => {
-          console.error('Error submitting the test:', error);
-        });
+      axios.post('http://localhost:5041/api/Test/passing-test', {
+        userId,
+        testId,
+        questionAndAnswer: selectedAnswers,
+      }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(() => {
+        navigate('/home');
+      })
+      .catch((error) => {
+        console.error('Error submitting the test:', error);
+      });
     } else {
       alert('Please answer all questions before submitting the test.');
     }
